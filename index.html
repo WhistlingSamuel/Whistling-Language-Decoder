@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Whistle Cipher Decoder</title>
+</head>
+<body>
+  <h2>Whistle Cipher Decoder</h2>
+  <textarea id="input" rows="4" cols="60" placeholder="Paste your whistle text here..."></textarea><br>
+  <button onclick="decodeWhistle()">Decode</button>
+  <h3>Decoded Text:</h3>
+  <div id="output" style="white-space: pre-wrap; border: 1px solid #ccc; padding: 10px;"></div>
+
+  <script>
+    const PITCH_TO_VOW = {'^':'a','>':'e','~':'i','-':'o','_':'u','`':'y'};
+    const TOKEN_TO_CONS = {
+      'B':'b','C':'c','D':'d','F':'f','G':'g','H':'h','J':'j','K':'k','L':'l',
+      'M':'m','N':'n','P':'p','Q':'q','R':'r','S':'s','T':'t','V':'v','W':'w','X':'x','Z':'z'
+    };
+
+    function decodeWhistle() {
+      const code = document.getElementById('input').value;
+      let out = '';
+      let i = 0;
+      while (i < code.length) {
+        const c = code[i];
+        if (PITCH_TO_VOW[c]) {
+          out += PITCH_TO_VOW[c];
+          i++;
+        } else if (c === ' ') {
+          out += ' ';
+          i++;
+        } else if (c === '/') {
+          out += ' ';
+          i++;
+        } else if (c === '.') {
+          i++;
+        } else if (c.match(/[A-Z]/)) {
+          const token = c;
+          i++;
+          if (code[i] === '.') i++;
+          out += TOKEN_TO_CONS[token] || '?';
+        } else {
+          out += c;
+          i++;
+        }
+      }
+      document.getElementById('output').textContent = out.replace(/  +/g, ' ');
+    }
+  </script>
+</body>
+</html>
