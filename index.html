@@ -1,1 +1,144 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8" /><title>Whistle Cipher</title><style>  body { background: #000; color: #0f0; font-family: monospace; padding: 20px; text-align: center; }  textarea { width: 80%; height: 120px; background: #000; color: #0f0; border: 1px solid #0f0; margin-bottom: 10px; resize: vertical; }  button { background: #111; color: #0f0; border: 1px solid #0f0; padding: 6px 12px; cursor: pointer; margin: 5px; }  button:hover { background: #030; }  footer { margin-top: 15px; font-size: 12px; color: #0f0; }  .hidden { display: none; }  label { display: block; margin-bottom: 6px; }</style></head><body><h1>Whistle Cipher</h1><div id="menu">  <button id="btnEncrypt">Encrypt</button>  <button id="btnDecrypt">Decrypt</button></div><div id="encryptMenu" class="hidden">  <h2>Encrypt</h2>  <label>Enter message:</label>  <textarea id="plain" placeholder="Type here..."></textarea><br />  <button id="encryptBtn">Encrypt →</button><br />  <label>Encrypted:</label>  <textarea id="whistleEnc" readonly placeholder="Encrypted message"></textarea><br />  <button id="backFromEncrypt">Back</button></div><div id="decryptMenu" class="hidden">  <h2>Decrypt</h2>  <label>Paste encrypted message:</label>  <textarea id="whistleDec" placeholder="Paste here"></textarea><br />  <button id="decryptBtn">Decrypt →</button><br />  <label>Decrypted:</label>  <textarea id="plainDec" readonly placeholder="Decrypted message"></textarea><br />  <button id="backFromDecrypt">Back</button></div><footer>MADE BY WHISTLINGSAMUEL ON ROBLOX</footer><script>const symbolMap = {  a: [".-♪", "~.-"],  b: [".._♩", "-_.."],  c: ["._~♫", "~_._"],  d: ["-..♪", "..-~"],  e: [">>~", "~>>"],  f: ["♩.._", "._♩."],  g: ["-~♫", "♫~-"],  h: ["♪._", "._♪"],  i: ["~.~", "~~."],  j: ["..♩~", "~♩.."],  k: ["-._", "_-."],  l: [".--", "--._"],  m: ["♩-~", "~♩-"],  n: ["_.~", "~._"],  o: ["---", "-.-"],  p: [".-_", "_-."],  q: ["♩~_", "_~♩"],  r: [">._", "._>"],  s: ["...", "..-"],  t: ["-.-", "-.."],  u: ["_..", ".._"],  v: ["..-♫", "♫-.."],  w: [".-.-", "-.-."],  x: ["..", "..--"],  y: ["`~.", ".~`"],  z: ["--♩", "♩--"],  ' ': ["/", "//"]};for (let k in symbolMap){  symbolMap[k] = symbolMap[k].map(t => t.replace(/[A-Za-z]/g, ''));}function encryptText(){  const plain = document.getElementById('plain').value.toLowerCase();  let tokens = [];  for (let ch of plain){    if (symbolMap[ch]){      const opts = symbolMap[ch];      const pick = opts[Math.floor(Math.random()*opts.length)];      tokens.push(pick);    } else {      tokens.push('...');    }  }  document.getElementById('whistleEnc').value = tokens.join(' ');}function decryptText(){  const input = document.getElementById('whistleDec').value.trim();  if (!input) {    document.getElementById('plainDec').value = '';    return;  }  const tokens = input.split(/\s+/);  let reverse = {};  for (let letter in symbolMap){    for (let tok of symbolMap[letter]){      reverse[tok] = letter;    }  }  let out = '';  for (let t of tokens){    out += reverse[t] || '?';  }  document.getElementById('plainDec').value = out;}function showMenu(){  document.getElementById('menu').classList.remove('hidden');  document.getElementById('encryptMenu').classList.add('hidden');  document.getElementById('decryptMenu').classList.add('hidden');}function showEncrypt(){  document.getElementById('menu').classList.add('hidden');  document.getElementById('encryptMenu').classList.remove('hidden');  document.getElementById('decryptMenu').classList.add('hidden');}function showDecrypt(){  document.getElementById('menu').classList.add('hidden');  document.getElementById('encryptMenu').classList.add('hidden');  document.getElementById('decryptMenu').classList.remove('hidden');}document.getElementById('btnEncrypt').addEventListener('click', showEncrypt);document.getElementById('btnDecrypt').addEventListener('click', showDecrypt);document.getElementById('encryptBtn').addEventListener('click', encryptText);document.getElementById('decryptBtn').addEventListener('click', decryptText);document.getElementById('backFromEncrypt').addEventListener('click', showMenu);document.getElementById('backFromDecrypt').addEventListener('click', showMenu);showMenu();</script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Whistle Cipher</title>
+<style>
+  body { background: #000; color: #0f0; font-family: monospace; padding: 20px; text-align: center; }
+  textarea { width: 80%; height: 120px; background: #000; color: #0f0; border: 1px solid #0f0; margin-bottom: 10px; resize: vertical; }
+  button { background: #111; color: #0f0; border: 1px solid #0f0; padding: 6px 12px; cursor: pointer; margin: 5px; }
+  button:hover { background: #030; }
+  footer { margin-top: 15px; font-size: 12px; color: #0f0; }
+  .hidden { display: none; }
+  label { display: block; margin-bottom: 6px; }
+</style>
+</head>
+<body>
+<h1>Whistle Cipher</h1>
+
+<div id="menu">
+  <button id="btnEncrypt">Encrypt</button>
+  <button id="btnDecrypt">Decrypt</button>
+</div>
+
+<div id="encryptMenu" class="hidden">
+  <h2>Encrypt</h2>
+  <label>Enter message:</label>
+  <textarea id="plain" placeholder="Type here..."></textarea><br />
+  <button id="encryptBtn">Encrypt →</button><br />
+  <label>Encrypted:</label>
+  <textarea id="whistleEnc" readonly placeholder="Encrypted message"></textarea><br />
+  <button id="backFromEncrypt">Back</button>
+</div>
+
+<div id="decryptMenu" class="hidden">
+  <h2>Decrypt</h2>
+  <label>Paste encrypted message:</label>
+  <textarea id="whistleDec" placeholder="Paste here"></textarea><br />
+  <button id="decryptBtn">Decrypt →</button><br />
+  <label>Decrypted:</label>
+  <textarea id="plainDec" readonly placeholder="Decrypted message"></textarea><br />
+  <button id="backFromDecrypt">Back</button>
+</div>
+
+<footer>MADE BY WHISTLINGSAMUEL ON ROBLOX</footer>
+
+<script>
+const symbolMap = {
+  a: [".-♪", "~.-"],
+  b: [".._♩", "-_.."],
+  c: ["._~♫", "~_._"],
+  d: ["-..♪", "..-~"],
+  e: [">>~", "~>>"],
+  f: ["♩.._", "._♩."],
+  g: ["-~♫", "♫~-"],
+  h: ["♪._", "._♪"],
+  i: ["~.~", "~~."],
+  j: ["..♩~", "~♩.."],
+  k: ["-._", "_-."],
+  l: [".--", "--._"],
+  m: ["♩-~", "~♩-"],
+  n: ["_.~", "~._"],
+  o: ["---", "-.-"],
+  p: [".-_", "_-."],
+  q: ["♩~_", "_~♩"],
+  r: [">._", "._>"],
+  s: ["...", "..-"],
+  t: ["-.-", "-.."],
+  u: ["_..", ".._"],
+  v: ["..-♫", "♫-.."],
+  w: [".-.-", "-.-."],
+  x: ["..", "..--"],
+  y: ["`~.", ".~`"],
+  z: ["--♩", "♩--"],
+  ' ': ["/", "//"]
+};
+
+for (let k in symbolMap){
+  symbolMap[k] = symbolMap[k].map(t => t.replace(/[A-Za-z]/g, ''));
+}
+
+function encryptText(){
+  const plain = document.getElementById('plain').value.toLowerCase();
+  let tokens = [];
+  for (let ch of plain){
+    if (symbolMap[ch]){
+      const opts = symbolMap[ch];
+      const pick = opts[Math.floor(Math.random()*opts.length)];
+      tokens.push(pick);
+    } else {
+      tokens.push('...');
+    }
+  }
+  document.getElementById('whistleEnc').value = tokens.join(' ');
+}
+
+function decryptText(){
+  const input = document.getElementById('whistleDec').value.trim();
+  if (!input) {
+    document.getElementById('plainDec').value = '';
+    return;
+  }
+  const tokens = input.split(/\s+/);
+  let reverse = {};
+  for (let letter in symbolMap){
+    for (let tok of symbolMap[letter]){
+      reverse[tok] = letter;
+    }
+  }
+  let out = '';
+  for (let t of tokens){
+    out += reverse[t] || '?';
+  }
+  document.getElementById('plainDec').value = out;
+}
+
+function showMenu(){
+  document.getElementById('menu').classList.remove('hidden');
+  document.getElementById('encryptMenu').classList.add('hidden');
+  document.getElementById('decryptMenu').classList.add('hidden');
+}
+
+function showEncrypt(){
+  document.getElementById('menu').classList.add('hidden');
+  document.getElementById('encryptMenu').classList.remove('hidden');
+  document.getElementById('decryptMenu').classList.add('hidden');
+}
+
+function showDecrypt(){
+  document.getElementById('menu').classList.add('hidden');
+  document.getElementById('encryptMenu').classList.add('hidden');
+  document.getElementById('decryptMenu').classList.remove('hidden');
+}
+
+document.getElementById('btnEncrypt').addEventListener('click', showEncrypt);
+document.getElementById('btnDecrypt').addEventListener('click', showDecrypt);
+document.getElementById('encryptBtn').addEventListener('click', encryptText);
+document.getElementById('decryptBtn').addEventListener('click', decryptText);
+document.getElementById('backFromEncrypt').addEventListener('click', showMenu);
+document.getElementById('backFromDecrypt').addEventListener('click', showMenu);
+
+showMenu();
+</script>
+</body>
+</html>
