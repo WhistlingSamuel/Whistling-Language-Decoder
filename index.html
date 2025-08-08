@@ -1,40 +1,203 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Whistle Cipher Decoder</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Whistle Cipher — Encoder & Decoder</title>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--muted:#94a3b8;--accent:#60a5fa;--glass: rgba(255,255,255,0.03)}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial}
+    body{background:linear-gradient(180deg,#071028 0%, #071a2a 100%);color:#e6eef8;display:flex;align-items:center;justify-content:center;padding:24px}
+    .wrap{max-width:980px;width:100%}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+    h1{font-size:20px;margin:0}
+    p.lead{margin:4px 0 0;color:var(--muted);font-size:13px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:12px;padding:18px;box-shadow:0 6px 20px rgba(2,6,23,0.6);}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    textarea,input{width:100%;box-sizing:border-box;border-radius:8px;padding:12px;background:var(--card);border:1px solid rgba(255,255,255,0.03);color:inherit;font-size:14px;min-height:120px}
+    .controls{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+    button{background:var(--accent);border:none;padding:10px 12px;border-radius:8px;color:#05233b;font-weight:600;cursor:pointer}
+    button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.05);color:var(--muted)}
+    .small{padding:8px 10px;border-radius:6px;font-size:13px}
+    .muted{color:var(--muted);font-size:13px}
+    footer{margin-top:14px;display:flex;justify-content:space-between;align-items:center}
+    .credits{font-size:13px;color:var(--muted)}
+    .notice{background:var(--glass);border-radius:8px;padding:10px;margin-top:12px;color:var(--muted);font-size:13px}
+    @media (max-width:800px){.grid{grid-template-columns:1fr}}
+    .token{display:inline-block;padding:4px 8px;border-radius:6px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);margin:4px 6px 4px 0}
+    .example{margin-top:8px}
+  </style>
 </head>
 <body>
-  <h2>Whistle Cipher Decoder</h2>
-  <textarea id="input" rows="4" cols="60" placeholder="Paste your whistle text here..."></textarea><br>
-  <button onclick="decodeWhistle()">Decode</button>
-  <h3>Decoded Text:</h3>
-  <div id="output" style="white-space: pre-wrap; border: 1px solid #ccc; padding: 10px;"></div>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Whistle Cipher — Encoder &amp; Decoder</h1>
+        <p class="lead">Encode English into whistle-text and decode back. Editable mapping built in.</p>
+      </div>
+      <div class="muted">Quick, offline · No tracking</div>
+    </header><div class="card">
+  <div class="grid">
+    <div>
+      <label for="plain">Plain text (input for encode / output for decode)</label>
+      <textarea id="plain" placeholder="Type or paste English text here...">My sister Abigail Bones shall rise her legacy.</textarea>
 
-  <script>
-    const PITCH_TO_VOW = {'^':'a','>':'e','~':'i','-':'o','_':'u','`':'y'};
-    const TOKEN_TO_CONS = {
-      'B':'b','C':'c','D':'d','F':'f','G':'g','H':'h','J':'j','K':'k','L':'l',
-      'M':'m','N':'n','P':'p','Q':'q','R':'r','S':'s','T':'t','V':'v','W':'w','X':'x','Z':'z'
+      <div class="controls">
+        <button id="encodeBtn">Encode →</button>
+        <button id="decodeBtn" class="ghost">← Decode</button>
+        <button id="copyPlain" class="small ghost">Copy</button>
+        <button id="clearPlain" class="small ghost">Clear</button>
+      </div>
+      <div class="example muted">Example: type <code>hello world</code> then press Encode.</div>
+    </div>
+
+    <div>
+      <label for="whistle">Whistle text</label>
+      <textarea id="whistle" placeholder="Encoded whistle text appears here..."></textarea>
+
+      <div class="controls">
+        <button id="copyWhistle" class="small">Copy</button>
+        <button id="downloadZip" class="small ghost">Download HTML</button>
+        <button id="swap" class="small ghost">Swap</button>
+      </div>
+
+      <div class="notice">Mapping (editable):
+        <div style="margin-top:8px">
+          <span class="token">a → ^</span>
+          <span class="token">e → &gt;</span>
+          <span class="token">i → ~</span>
+          <span class="token">o → -</span>
+          <span class="token">u → _</span>
+          <span class="token">y → `</span>
+        </div>
+        <div style="margin-top:6px">
+          Consonants become uppercase tokens with a dot, e.g. <span class="token">h → H.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:12px">
+    <label for="mappingEditor">Advanced: Edit token mapping (JSON)</label>
+    <textarea id="mappingEditor" style="min-height:120px">{
+
+"vowels": {"a":"^","e":">","i":"~","o":"-","u":"_","y":"`"}, "consonants": {"b":"B","c":"C","d":"D","f":"F","g":"G","h":"H","j":"J","k":"K","l":"L","m":"M","n":"N","p":"P","q":"Q","r":"R","s":"S","t":"T","v":"V","w":"W","x":"X","z":"Z"} }</textarea> <div class="controls"> <button id="applyMap" class="small">Apply mapping</button> <button id="resetMap" class="small ghost">Reset mapping</button> </div> </div>
+
+<footer>
+    <div class="credits">Made by <strong>WhistlingSamuel on Roblox</strong></div>
+    <div style="text-align:right">
+      <div class="muted">Want this on GitHub Pages? Click <strong>Download HTML</strong> then push to a repo named <code>username.github.io</code>.</div>
+    </div>
+  </footer>
+</div>
+
+<div style="margin-top:10px;color:var(--muted);font-size:13px">If you want I can prepare the GitHub repo for you (I can give exact commit text) or customize the look.</div>
+
+  </div>  <script>
+    // Default mapping (same as we defined earlier)
+    let mapping = {
+      vowels: {a:'^', e:'>', i:'~', o:'-', u:'_', y:'`'},
+      consonants: {b:'B',c:'C',d:'D',f:'F',g:'G',h:'H',j:'J',k:'K',l:'L',m:'M',n:'N',p:'P',q:'Q',r:'R',s:'S',t:'T',v:'V',w:'W',x:'X',z:'Z'}
     };
 
-    function decodeWhistle() {
-      const code = document.getElementById('input').value;
-      let out = '';
-      let i = 0;
-      while (i < code.length) {
+    const plainEl = document.getElementById('plain');
+    const whistleEl = document.getElementById('whistle');
+    const mappingEditor = document.getElementById('mappingEditor');
+
+    function encodeWhistle(text){
+      let out = [];
+      for(let ch of text){
+        if (ch === ' ') { out.push(' / '); continue; }
+        const lower = ch.toLowerCase();
+        if (mapping.vowels[lower]) {
+          out.push(mapping.vowels[lower]);
+        } else if (mapping.consonants[lower]) {
+          out.push(mapping.consonants[lower] + '.');
+        } else {
+          // preserve punctuation and numbers
+          out.push(ch);
+        }
+      }
+      return out.join('');
+    }
+
+    function decodeWhistle(code){
+      const pitchToVow = Object.fromEntries(Object.entries(mapping.vowels).map(([k,v])=>[v,k]));
+      const tokenToCons = Object.fromEntries(Object.entries(mapping.consonants).map(([k,v])=>[v,k]));
+      let i = 0, out = [];
+      while(i < code.length){
         const c = code[i];
-        if (PITCH_TO_VOW[c]) {
-          out += PITCH_TO_VOW[c];
+        if (pitchToVow[c]){ out.push(pitchToVow[c]); i++; }
+        else if (c === ' '){ out.push(' '); i++; }
+        else if (c === '/') { out.push(' '); i++; }
+        else if (c === '.') { i++; }
+        else if (c >= 'A' && c <= 'Z'){
+          const token = c;
           i++;
-        } else if (c === ' ') {
-          out += ' ';
-          i++;
-        } else if (c === '/') {
-          out += ' ';
-          i++;
-        } else if (c === '.') {
-          i++;
+          if (code[i] === '.') i++;
+          out.push(tokenToCons[token] || '?');
+        } else {
+          out.push(c); i++;
+        }
+      }
+      return out.join('').replace(/  +/g,' ');
+    }
+
+    document.getElementById('encodeBtn').addEventListener('click', ()=>{
+      whistleEl.value = encodeWhistle(plainEl.value);
+    });
+    document.getElementById('decodeBtn').addEventListener('click', ()=>{
+      plainEl.value = decodeWhistle(whistleEl.value);
+    });
+
+    document.getElementById('copyWhistle').addEventListener('click', ()=>{
+      navigator.clipboard.writeText(whistleEl.value).then(()=>alert('Copied whistle text'));
+    });
+    document.getElementById('copyPlain').addEventListener('click', ()=>{
+      navigator.clipboard.writeText(plainEl.value).then(()=>alert('Copied plain text'));
+    });
+    document.getElementById('clearPlain').addEventListener('click', ()=>{ plainEl.value=''; whistleEl.value=''; });
+    document.getElementById('swap').addEventListener('click', ()=>{ const t = plainEl.value; plainEl.value = whistleEl.value; whistleEl.value = t; });
+
+    document.getElementById('applyMap').addEventListener('click', ()=>{
+      try{
+        const parsed = JSON.parse(mappingEditor.value);
+        if (parsed.vowels && parsed.consonants){ mapping = parsed; alert('Mapping applied'); }
+        else alert('JSON must contain vowels and consonants objects');
+      }catch(e){ alert('Invalid JSON: ' + e.message); }
+    });
+
+    document.getElementById('resetMap').addEventListener('click', ()=>{
+      mapping = {
+        vowels: {a:'^', e:'>', i:'~', o:'-', u:'_', y:'`'},
+        consonants: {b:'B',c:'C',d:'D',f:'F',g:'G',h:'H',j:'J',k:'K',l:'L',m:'M',n:'N',p:'P',q:'Q',r:'R',s:'S',t:'T',v:'V',w:'W',x:'X',z:'Z'}
+      };
+      mappingEditor.value = JSON.stringify(mapping, null, 2);
+      alert('Mapping reset');
+    });
+
+    document.getElementById('downloadZip').addEventListener('click', ()=>{
+      // Offer the current HTML for download (single file)
+      const blob = new Blob([document.documentElement.outerHTML], {type:'text/html'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'index.html';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    });
+
+    // initialize mapping editor
+    mappingEditor.value = JSON.stringify(mapping, null, 2);
+
+    // small convenience: encode sample on load
+    window.addEventListener('load', ()=>{ whistleEl.value = encodeWhistle(plainEl.value); });
+  </script></body>
+</html>          i++;
         } else if (c.match(/[A-Z]/)) {
           const token = c;
           i++;
